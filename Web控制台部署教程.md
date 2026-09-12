@@ -26,9 +26,9 @@ Web 控制台是独立镜像，不替代现有的命令行镜像 `jieme520/cfst-
 先在 VPS 创建数据目录：
 
 ```bash
-sudo mkdir -p /opt/dockerdata/cfst-web/data
-sudo chown -R 65532:65532 /opt/dockerdata/cfst-web/data
-sudo chmod 750 /opt/dockerdata/cfst-web/data
+sudo mkdir -p /opt/dockerdata/cfst/web/data
+sudo chown -R 65532:65532 /opt/dockerdata/cfst/web/data
+sudo chmod 750 /opt/dockerdata/cfst/web/data
 ```
 
 将 `docker-compose.web.yml` 上传到 VPS 的应用目录，命名为 `docker-compose.yml`，然后启动：
@@ -39,12 +39,12 @@ sudo docker compose up -d
 sudo docker compose logs -f
 ```
 
-Compose 使用 `network_mode: host`，但 Web 服务只监听 VPS 本机的 `127.0.0.1:8088`，不会直接暴露到公网。测速流量仍使用 VPS 本机的出站网络。
+Compose 使用 `network_mode: host`，但 Web 服务只监听 VPS 本机的 `127.0.0.1:2388`，不会直接暴露到公网。测速流量仍使用 VPS 本机的出站网络。
 
 在 1Panel 的“网站”中建立反向代理时，目标填写：
 
 ```text
-http://127.0.0.1:8088
+http://127.0.0.1:2388
 ```
 
 反向代理公开到互联网前，务必在 `docker-compose.yml` 的 `environment:` 下取消注释并设置强密码：
@@ -61,6 +61,6 @@ http://127.0.0.1:8088
 - 默认运行间隔为 6 小时。修改后从保存时重新计算下一次运行时间。
 - 点击“立即测速”会立即运行一轮，不会与自动任务并行。
 - “下载测速数量”默认 20，表示只对延迟排名靠前的 20 个 IP 进行下载测速；并非对全部候选进行带宽测试。
-- 候选库和最新结果保存在 `/opt/dockerdata/cfst-web/data/`；每轮 CSV 位于 `data/results/`，程序保存最近 30 条任务摘要。
+- 候选库和最新结果保存在 `/opt/dockerdata/cfst/web/data/`；每轮 CSV 位于 `data/results/`，程序保存最近 30 条任务摘要。
 
 网页结果只反映运行该 VPS 的网络路径。若希望优化中国大陆用户访问体验，应在目标大陆网络中部署并测试，且根据服务条款和业务授权使用测试结果。

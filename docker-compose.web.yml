@@ -3,7 +3,7 @@ services:
     image: jieme520/cfst-tester:web-v0.1.0
     network_mode: host
     environment:
-      CFST_WEB_ADDR: 127.0.0.1:8088
+      CFST_WEB_ADDR: 127.0.0.1:2388
       # Keep the console localhost-only unless you configure a reverse proxy.
       # For an externally reachable reverse proxy, set both values below.
       # CFST_WEB_USER: admin
@@ -12,7 +12,7 @@ services:
     tmpfs:
       - /tmp:mode=1777,size=64m
     volumes:
-      - /opt/dockerdata/cfst-web/data:/data:rw
+      - /opt/dockerdata/cfst/web/data:/data:rw
     security_opt:
       - no-new-privileges:true
     cap_drop:
