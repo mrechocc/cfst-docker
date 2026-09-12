@@ -25,6 +25,10 @@
 
 本项目的工作流已关闭 `provenance` 与 `sbom` attestation，避免部分 Docker Hub 仓库拒绝 OCI attestation manifest。若 GitHub 仓库中仍是旧工作流，请将 `.github/workflows/publish-dockerhub.yml` 同步为本目录最新版本后再执行 `Re-run jobs`。登录步骤成功而 Build and push 失败时，不要重新生成 Docker Hub Token。
 
+### 发布失败：`build-multi-platform`
+
+工作流必须在 Build and push 之前执行 `Set up QEMU for ARM64 builds` 和 `Set up Docker Buildx`。这两个步骤用于在 GitHub 的 AMD64 runner 上构建 ARM64 镜像并创建多架构 manifest。当前目录最新版工作流已包含它们；同步后再重新运行。
+
 ## 在 VPS 部署
 
 在 VPS 中只需创建一个运行目录，不需要克隆源码或构建镜像：
