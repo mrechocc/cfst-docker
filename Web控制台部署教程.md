@@ -16,10 +16,12 @@ Web 控制台是独立镜像，不替代现有的命令行镜像 `jieme520/cfst-
 
 1. 将本项目新增文件推送到 GitHub。
 2. 在 GitHub 仓库的 **Actions** 中运行 **Publish CFST Web Console**。
-3. `image_tag` 填写 `web-v0.1.0`。
-4. 工作流成功后，Docker Hub 会出现 `jieme520/cfst-tester:web-v0.1.0`，其中同时包含 `amd64` 和 `arm64` 镜像。
+3. `image_tag` 填写新的固定版本号，例如 `web-v0.1.1`。
+4. 工作流成功后，Docker Hub 会同时出现固定版本标签 `jieme520/cfst-tester:web-v0.1.1` 和可滚动更新的 `jieme520/cfst-tester:web-latest`，其中均包含 `amd64` 和 `arm64` 镜像。
 
 该工作流继续使用原有 Docker Hub 用户变量与访问令牌；不需要新建 Docker Hub 仓库。
+
+部署文件默认使用 `web-latest`。该标签不会让运行中的容器自行升级；每次发布后仍需在 1Panel 点击“更新/重建”，或执行 `docker compose pull && docker compose up -d`。需要可回滚、可复现的生产部署时，改用固定版本标签。
 
 ## VPS 与 1Panel 部署
 

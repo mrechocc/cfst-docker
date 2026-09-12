@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       image_tag:
-        description: New web image tag, for example web-v0.1.0
+        description: New web image tag, for example web-v0.1.1
         required: true
         type: string
 
@@ -44,6 +44,7 @@ jobs:
             CFST_VERSION=v2.3.5
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.IMAGE_NAME }}:web-latest
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.version=${{ env.IMAGE_TAG }}

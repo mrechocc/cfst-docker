@@ -1,6 +1,6 @@
 services:
   cfst-web:
-    image: jieme520/cfst-tester:web-v0.1.0
+    image: jieme520/cfst-tester:web-latest
     network_mode: host
     environment:
       CFST_WEB_ADDR: 127.0.0.1:2388
