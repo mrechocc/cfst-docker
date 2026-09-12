@@ -21,6 +21,10 @@
 
 发布完成后，在 Docker Hub 的仓库 Tags 页面确认标签存在。不要部署 `latest` 或会被覆盖的标签。
 
+### 发布失败：`buildx failed` / `attestations`
+
+本项目的工作流已关闭 `provenance` 与 `sbom` attestation，避免部分 Docker Hub 仓库拒绝 OCI attestation manifest。若 GitHub 仓库中仍是旧工作流，请将 `.github/workflows/publish-dockerhub.yml` 同步为本目录最新版本后再执行 `Re-run jobs`。登录步骤成功而 Build and push 失败时，不要重新生成 Docker Hub Token。
+
 ## 在 VPS 部署
 
 在 VPS 中只需创建一个运行目录，不需要克隆源码或构建镜像：
