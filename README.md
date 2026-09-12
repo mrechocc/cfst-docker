@@ -93,3 +93,7 @@ docker compose run --rm cfst \
 ## 通过 Docker Hub 部署
 
 若不希望 VPS 编译镜像，可使用 GitHub Actions 发布镜像到自己的 Docker Hub 仓库，再由 VPS 直接拉取。完整步骤见 [DockerHub发布与VPS部署.md](DockerHub发布与VPS部署.md)。
+
+## Web 控制台
+
+`Dockerfile.web` 提供独立的 Web 控制台镜像。它可在页面设置运行间隔、启动测速、查看优选 IP 和结果历史，并将 TCP 连续失败的单 IP 候选从精简库中清理。部署与安全配置见 [Web控制台部署教程.md](Web控制台部署教程.md)。

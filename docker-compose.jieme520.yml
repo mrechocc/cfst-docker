@@ -1,0 +1,33 @@
+services:
+  cfst:
+    image: jieme520/cfst-tester:v2.3.5-1
+    network_mode: host
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=64m
+    volumes:
+      - /opt/dockerdata/cfst/results:/results:rw
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 128
+    mem_limit: 256m
+    restart: "no"
+    command:
+      - -f
+      - /app/ip.txt
+      - -o
+      - /results/result.csv
+      - -n
+      - "50"
+      - -t
+      - "4"
+      - -dn
+      - "5"
+      - -dt
+      - "5"
+      - -tl
+      - "500"
+      - -tlr
+      - "0.1"

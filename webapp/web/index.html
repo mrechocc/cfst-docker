@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CFST 控制台</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">CloudflareSpeedTest</p>
+        <h1>优选 IP 控制台</h1>
+      </div>
+      <div class="header-actions">
+        <span id="statusBadge" class="status-badge" aria-live="polite">读取状态中</span>
+        <button id="runButton" class="button button-primary" type="button">立即测速</button>
+      </div>
+    </header>
+
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+
+    <section class="metrics" aria-label="运行状态">
+      <article class="metric">
+        <span>候选 IP 库</span>
+        <strong id="candidateCount">-</strong>
+        <small>仅保留 TCP 可达的单 IP 候选</small>
+      </article>
+      <article class="metric">
+        <span>下一次运行</span>
+        <strong id="nextRun">-</strong>
+        <small id="runSource">等待设置</small>
+      </article>
+      <article class="metric">
+        <span>本轮最佳候选</span>
+        <strong id="bestIP">-</strong>
+        <small id="bestDetail">暂无结果</small>
+      </article>
+    </section>
+
+    <section class="workspace">
+      <form id="configForm" class="settings" novalidate>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">运行设置</p>
+            <h2>测试与清理规则</h2>
+          </div>
+          <button class="button" type="submit">保存设置</button>
+        </div>
+        <div class="form-grid">
+          <label>运行间隔（小时）
+            <input id="intervalHours" min="1" max="168" type="number" required>
+          </label>
+          <label>延迟测试线程
+            <input id="threads" min="1" max="200" type="number" required>
+          </label>
+          <label>每个 IP 延迟次数
+            <input id="packets" min="1" max="10" type="number" required>
+          </label>
+          <label>下载测速数量
+            <input id="downloads" min="1" max="50" type="number" required>
+          </label>
+          <label>单 IP 下载秒数
+            <input id="downloadSeconds" min="1" max="60" type="number" required>
+          </label>
+          <label>延迟上限（ms）
+            <input id="latencyLimitMs" min="10" max="5000" type="number" required>
+          </label>
+          <label>丢包上限（0.00 - 1.00）
+            <input id="lossLimit" min="0" max="1" step="0.01" type="number" required>
+          </label>
+          <label>连续失败删除次数
+            <input id="failureThreshold" min="1" max="10" type="number" required>
+          </label>
+        </div>
+        <label class="switch-row">
+          <input id="autoPrune" type="checkbox">
+          <span>自动清理连续 TCP 不可达的候选 IP</span>
+        </label>
+        <p class="note">下载速度为 0 不会自动删除 IP。仅当精简库复测中连续 TCP 不可达达到阈值时才删除，避免测速地址波动导致误删。</p>
+        <div class="danger-row">
+          <div>
+            <strong>重新全量收集</strong>
+            <p>清空精简库。下一次测速将使用上游 IP 段重新收集候选。</p>
+          </div>
+          <button id="resetLibrary" class="button button-danger" type="button">清空候选库</button>
+        </div>
+      </form>
+
+      <section class="results-section" aria-labelledby="resultTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">最新结果</p>
+            <h2 id="resultTitle">优选 IP</h2>
+          </div>
+          <a class="button" href="/api/download/current">下载 CSV</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>IP</th><th>延迟</th><th>丢包</th><th>下载</th><th>节点</th></tr>
+            </thead>
+            <tbody id="resultsBody"><tr><td colspan="5" class="empty">尚无测试结果</td></tr></tbody>
+          </table>
+        </div>
+        <p class="note">列表显示最近一次运行中按下载速度、丢包率、延迟排序的前 100 项。</p>
+      </section>
+    </section>
+
+    <section class="full-width" aria-labelledby="libraryTitle">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">精简库</p>
+          <h2 id="libraryTitle">候选 IP 状态</h2>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>IP</th><th>延迟</th><th>下载</th><th>节点</th><th>连续失败</th><th>最近可达</th></tr>
+          </thead>
+          <tbody id="candidatesBody"><tr><td colspan="6" class="empty">候选库将在首次全量测速完成后建立</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <section aria-labelledby="historyTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">运行记录</p>
+            <h2 id="historyTitle">最近 30 次</h2>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>完成时间</th><th>来源</th><th>可达</th><th>测速成功</th><th>清理</th></tr>
+            </thead>
+            <tbody id="historyBody"><tr><td colspan="5" class="empty">暂无记录</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+      <section aria-labelledby="logTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">最近日志</p>
+            <h2 id="logTitle">CFST 输出</h2>
+          </div>
+        </div>
+        <pre id="logOutput">暂无日志</pre>
+      </section>
+    </section>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

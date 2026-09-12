@@ -1,0 +1,31 @@
+FROM golang:1.23-bookworm AS cfst-builder
+
+ARG CFST_VERSION=v2.3.5
+
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y git ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+RUN git clone --branch "$CFST_VERSION" --depth 1 https://github.com/XIU2/CloudflareSpeedTest.git . \
+    && test "$(git describe --exact-match --tags HEAD)" = "$CFST_VERSION" \
+    && CGO_ENABLED=0 go build -trimpath \
+        -ldflags "-s -w -X main.version=${CFST_VERSION}" \
+        -o /out/cfst .
+
+FROM golang:1.23-bookworm AS web-builder
+
+WORKDIR /src/webapp
+COPY webapp/ ./
+RUN CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o /out/cfst-web .
+
+FROM scratch
+
+COPY --from=cfst-builder /out/cfst /app/cfst
+COPY --from=cfst-builder /src/ip.txt /app/ip.txt
+COPY --from=cfst-builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=web-builder /out/cfst-web /app/cfst-web
+
+WORKDIR /app
+USER 65532:65532
+ENTRYPOINT ["/app/cfst-web"]
